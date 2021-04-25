@@ -24,5 +24,18 @@ function deleteSale(id) {
     return global.conn.collection("sales").deleteOne({ _id: new ObjectId(id) });
 }
 
+function listSale(cpf) {
+    return global.conn.collection("sales").find({"retailerCpf": cpf}).toArray();
+}
 
-module.exports = { insertRetailer, insertSale, findSale, updateSale, deleteSale }
+function totalSales(cpf) {
+    return global.conn.collection("sales").aggregate( [{$group :{_id : "$retailerCpf", totalSaleAmount: { $sum: "$salePrice" }}},{
+        $match: { "_id": cpf }
+      }]).toArray();
+}
+
+function findeRetailer(email) {
+    return global.conn.collection("retailer").find({"email": email}).toArray();
+}
+
+module.exports = { insertRetailer, insertSale, findSale, updateSale, deleteSale, listSale, totalSales, findeRetailer }
